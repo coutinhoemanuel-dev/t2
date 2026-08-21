@@ -1,0 +1,106 @@
+<?php
+include('conexao.php');
+
+if(isset($_POST['email']) || isset($_POST['senha'])) {
+
+    if(strlen($_POST['email']) == 0) {
+        echo "";
+    } else if(strlen($_POST['senha']) == 0) {
+        echo "";
+    } else {
+
+        $email = $mysqli->real_escape_string($_POST['email']);
+        $senha = $mysqli->real_escape_string($_POST['senha']);
+
+        $sql_code = "SELECT * FROM usuarios WHERE email = '$email' AND senha = '$senha'";
+        $sql_query = $mysqli->query($sql_code) or die("Falha na execução do código SQL: " . $mysqli->error);
+
+        $quantidade = $sql_query->num_rows;
+
+        if($quantidade == 1) {
+            
+            $usuario = $sql_query->fetch_assoc();
+
+            if(!isset($_SESSION)) {
+                session_start();
+            }
+
+            $_SESSION['id'] = $usuario['id'];
+            $_SESSION['nome'] = $usuario['nome'];
+
+            header("Location: painel.php");
+
+        }
+
+    }
+
+}
+?>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container-principal">
+
+       
+        <div class="lado-esquerdo">
+            <div class="icone-box">🖥️</div>
+            <h1>Laboratórios</h1>
+            <p class="subtitulo">Agendamento de Laboratórios de informática</p>
+            <p class="descricao">Facilidade, organização e eficiência para o seu dia a dia.</p>
+        </div>
+
+       
+        <div class="lado-direito">
+            <div class="card-login">
+                <h2>Bem-vindo de volta!</h2>
+                <p class="subtitulo-card">Faça login para acessar o sistema de agendamento.</p>
+
+                <form action="" method="POST">
+                    <div class="campo">
+                        <label>E-mail</label>
+                        <input type="text" name="email" placeholder="Digite seu email">
+                    </div>
+
+                    <div class="campo">
+                        <label>Senha</label>
+                        <div class="campo-senha-container">
+                            <input type="password" id="inputSenha" name="senha" placeholder="Digite sua senha">
+                            <button type="button" class="btn-olho" onclick="alternarSenha()">👁️</button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="button3">➔ Entrar</button>
+                </form>
+
+                <div class="rodape-card">
+                    <p>Não tem uma conta? <button type="button" class="button2">Fale com administrador.</button></p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+   
+    <footer class="rodape-pagina">
+        <p>Sistema seguro e exclusivo para alunos e professores. Todos os direitos reservados.</p>
+    </footer>
+
+    <script>
+    function alternarSenha() {
+        const input = document.getElementById('inputSenha');
+        if (input.type === 'password') {
+            input.type = 'text';
+        } else {
+            input.type = 'password';
+        }
+    }
+    </script>
+</body>
+</html>
